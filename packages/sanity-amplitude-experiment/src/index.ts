@@ -3,6 +3,8 @@ import pkgjson from '../package.json'
 import amplitudeExperiments from './schemas/amplitude-experiments'
 import {CustomStudioLayout} from './components/StudioLayout'
 
+export * from './types'
+
 const pluginName = pkgjson.name
 
 /**
