@@ -28,7 +28,7 @@ export function ExperimentInput(props: ObjectInputProps) {
   if (!secrets?.apiKey) {
     return (
       <Flex>
-        <AmplitudeCredentials text="Configure Amplitude api key" />
+        <AmplitudeCredentials text="Configure Amplitude Credentials" />
       </Flex>
     )
   }
@@ -174,7 +174,7 @@ function AmplitudeCredentials(props: {text?: string}) {
       </Button>
       {showSettings && (
         <SettingsView
-          title={'Amplitude API credentials'}
+          title={'Amplitude Credentials'}
           namespace={namespace}
           keys={pluginConfigKeys}
           onClose={() => {

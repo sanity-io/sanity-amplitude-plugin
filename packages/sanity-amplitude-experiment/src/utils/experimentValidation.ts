@@ -7,6 +7,11 @@ export async function validateExperiment(
   const {document, getClient} = context
   const client = getClient({apiVersion: '2024-04-17'})
   const id = document?._id.replace(/^drafts\./, '')
+
+  if (!value) {
+    return true
+  }
+
   const params = {
     draft: `drafts.${id}`,
     published: id,
