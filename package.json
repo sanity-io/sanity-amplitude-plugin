@@ -2,7 +2,7 @@
   "name": "sanity-amplitude-experiment",
   "private": true,
   "scripts": {
-    "build": "turbo build --no-cache --filter='./packages/*",
+    "build": "turbo build --no-cache --filter='./packages/*'",
     "dev": "turbo dev",
     "lint": "turbo lint",
     "changeset": "changeset add",
