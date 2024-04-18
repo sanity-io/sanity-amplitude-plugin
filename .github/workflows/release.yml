@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      pull-requests: write
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm run build-install
+
+      - name: Build Packages
+        run: pnpm run build
+
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          # Note: pnpm install after versioning is necessary to refresh lockfile
+          version: pnpm run version
+          publish: pnpm exec changeset publish
+          commit: "[ci] release"
+          title: "[ci] release"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - uses: actions/github-script@v7
+        if: steps.changesets.outputs.published == 'true'
+        name: Parse Changeset `publishedPackages` output
+        id: parse_packages
+        with:
+          script: |
+            const changes = ${{steps.changesets.outputs.publishedPackages}};
+            let message = ":rocket: *New release* :rocket:\n\n\nA new release of *${{github.repository}}* was published!";
+            if (Array.isArray(changes) && changes.length > 0) {
+              message += "\n\n";
+              changes.forEach(package => {
+                message += `*Package:* \`${package.name}\`\n*Version:* \`${package.version}\`\n\n`;
+              });
+            }
+            message += "Changelog :point_right: https://github.com/${{github.repository}}/releases";
+            core.setOutput("blocks",
+              JSON.stringify({
+                "text": message
+              })
+            );
+
+      - name: Send a Slack notification if a publish happens
+        if: steps.changesets.outputs.published == 'true'
+        id: slack
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          # This data can be any valid JSON from a previous step in the GitHub Action
+          payload: ${{steps.parse_packages.outputs.blocks}}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

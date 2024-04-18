@@ -2,19 +2,23 @@
   "name": "sanity-amplitude-experiment",
   "private": true,
   "scripts": {
-    "build": "turbo build",
+    "build": "turbo build --no-cache --filter='./packages/*",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "changeset": "changeset add",
+    "version": "changeset version",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
     "prettier": "^3.2.5",
     "turbo": "latest"
   },
   "packageManager": "pnpm@8.9.0",
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "@changesets/cli": "^2.27.1"
   }
 }
