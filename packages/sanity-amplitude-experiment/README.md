@@ -61,5 +61,5 @@ export default defineType({
 
 #### 3. Configure your Management API key
 
-<video controls src="https://github.com/tinloof/sanity-amplitude-experiment/assets/10447155/7ee32742-a8ba-4b52-b0c5-bae5de4fcb1d">
+<video controls src="https://github.com/tinloof/sanity-amplitude-experiment/assets/10447155/f7a92086-97b0-4e96-a938-7725853da327">
 </video>
