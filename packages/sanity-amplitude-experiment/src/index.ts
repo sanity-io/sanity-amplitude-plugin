@@ -1,6 +1,7 @@
 import {definePlugin} from 'sanity'
 import pkgjson from '../package.json'
 import amplitudeExperiments from './schemas/amplitude-experiments'
+import {CustomStudioLayout} from './components/StudioLayout'
 
 const pluginName = pkgjson.name
 
@@ -20,6 +21,11 @@ const pluginName = pkgjson.name
 export const amplitudeExperiment = definePlugin(() => {
   return {
     name: pluginName,
+    studio: {
+      components: {
+        layout: CustomStudioLayout,
+      },
+    },
     schema: {
       types: [amplitudeExperiments],
     },

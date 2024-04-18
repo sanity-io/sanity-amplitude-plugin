@@ -1,22 +1,14 @@
 import {ObjectInputProps, set, unset} from 'sanity'
 import {Button, Card, Flex, Select, Spinner, Stack, Text} from '@sanity/ui'
-import {SettingsView, useSecrets} from '@sanity/studio-secrets'
+import {SettingsView} from '@sanity/studio-secrets'
 import {useCallback, useEffect, useState} from 'react'
 import {EllipsisVerticalIcon} from '@sanity/icons'
 import useSWR from 'swr'
-
-const namespace = 'amplitudeSecrets'
-
-const pluginConfigKeys = [
-  {
-    key: 'apiKey',
-    title: 'Management API Key',
-  },
-]
+import {secretsNamespace, useAmplitudeCredentials} from './StudioLayout'
 
 export function ExperimentInput(props: ObjectInputProps) {
   const {onChange, value} = props
-  const {secrets, loading}: any = useSecrets(namespace)
+  const {secrets, loading} = useAmplitudeCredentials()
 
   useEffect(() => {
     // Reset input value when the API key is removed
@@ -179,8 +171,13 @@ function AmplitudeCredentials(props: {text?: string}) {
       {showSettings && (
         <SettingsView
           title={'Amplitude Credentials'}
-          namespace={namespace}
-          keys={pluginConfigKeys}
+          namespace={secretsNamespace}
+          keys={[
+            {
+              key: 'apiKey',
+              title: 'Management API Key',
+            },
+          ]}
           onClose={() => {
             setShowSettings(false)
           }}
