@@ -27,8 +27,6 @@ export async function loadEvaluationPage({
   key: string
   variant: string
 }) {
-  console.log(key, variant)
-
   return loadQuery<PagePayload | null>({
     query: PAGE_EVALUATION_QUERY,
     params: { experimentKey: key, experimentVariant: variant },
