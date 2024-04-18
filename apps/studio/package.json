@@ -1,0 +1,46 @@
+{
+  "name": "sanity-amplitude-demo",
+  "private": true,
+  "version": "1.0.0",
+  "main": "package.json",
+  "license": "UNLICENSED",
+  "scripts": {
+    "dev": "sanity dev",
+    "start": "sanity start",
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "deploy-graphql": "sanity graphql deploy"
+  },
+  "keywords": [
+    "sanity"
+  ],
+  "dependencies": {
+    "@sanity/icons": "^2.11.8",
+    "@sanity/studio-secrets": "^2.0.2",
+    "@sanity/ui": "^2.1.4",
+    "@sanity/vision": "^3.38.0",
+    "@tinloof/sanity-studio": "^1.0.2",
+    "lodash": "^4.17.21",
+    "lucide-react": "^0.360.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^5.1.0",
+    "sanity": "^3.38.0",
+    "styled-components": "^6.1.8",
+    "swr": "^2.2.5"
+  },
+  "devDependencies": {
+    "@sanity/eslint-config-studio": "^4.0.0",
+    "@types/lodash": "^4.17.0",
+    "@types/react": "^18.2.79",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.5"
+  },
+  "prettier": {
+    "semi": false,
+    "printWidth": 100,
+    "bracketSpacing": false,
+    "singleQuote": true
+  }
+}
