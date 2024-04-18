@@ -1,5 +1,6 @@
 {
   "name": "sanity-plugin-amplitude-experiment",
+  "type": "module",
   "version": "1.0.0",
   "description": "",
   "keywords": [
@@ -9,11 +10,10 @@
   "license": "MIT",
   "author": "Tinloof",
   "sideEffects": false,
-  "type": "commonjs",
   "exports": {
     ".": {
       "source": "./src/index.ts",
-      "import": "./dist/index.mjs",
+      "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
     "./package.json": "./package.json"
@@ -28,12 +28,12 @@
   ],
   "scripts": {
     "dev": "run-s watch",
-    "build": "plugin-kit verify-package --silent && pkg-utils build --strict --check --clean",
+    "build": "pkg build --strict --check --clean",
+    "lint": "eslint .",
+    "prepublishOnly": "pnpm build",
+    "watch": "pkg watch --strict",
     "format": "prettier --write --cache --ignore-unknown .",
     "link-watch": "plugin-kit link-watch",
-    "lint": "eslint .",
-    "prepublishOnly": "npm run build",
-    "watch": "pkg-utils watch --strict",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -59,6 +59,29 @@
     "sanity": "^3.38.0",
     "styled-components": "^5.3.11",
     "typescript": "^5.4.5"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true,
+      "browser": true
+    },
+    "extends": [
+      "sanity",
+      "sanity/typescript",
+      "sanity/react",
+      "plugin:react-hooks/recommended",
+      "plugin:prettier/recommended",
+      "plugin:react/jsx-runtime"
+    ],
+    "ignores": [
+      "*.js",
+      ".eslintrc.js",
+      "commitlint.config.js",
+      "dist",
+      "lint-staged.config.js",
+      "package.config.ts"
+    ]
   },
   "peerDependencies": {
     "react": "^18",
