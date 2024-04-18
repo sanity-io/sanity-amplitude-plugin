@@ -16,7 +16,7 @@ const pluginConfigKeys = [
 
 export function ExperimentInput(props: ObjectInputProps) {
   const {onChange, value} = props
-  const {secrets}: any = useSecrets(namespace)
+  const {secrets, loading}: any = useSecrets(namespace)
 
   useEffect(() => {
     // Reset input value when the API key is removed
@@ -24,6 +24,10 @@ export function ExperimentInput(props: ObjectInputProps) {
       onChange(unset())
     }
   }, [secrets, onChange, value])
+
+  if (loading) {
+    return <Spinner />
+  }
 
   if (!secrets?.apiKey) {
     return (
