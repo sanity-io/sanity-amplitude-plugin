@@ -1,7 +1,5 @@
 import {definePathname} from '@tinloof/sanity-studio'
 import {defineField, defineType} from 'sanity'
-import {ExperimentInput} from '../components/ExperimentInput'
-import {validateExperiment} from '../utils/experimentValidation'
 
 export default defineType({
   type: 'document',
@@ -32,28 +30,8 @@ export default defineType({
     },
     defineField({
       name: 'experiment',
-      title: 'Experiment',
-      type: 'object',
+      type: 'amplitude-experiment',
       group: 'A/B testing',
-      fields: [
-        {
-          name: 'key',
-          type: 'string',
-        },
-        {
-          name: 'id',
-          type: 'string',
-        },
-        {
-          name: 'variant',
-          type: 'string',
-        },
-      ],
-      components: {
-        input: ExperimentInput,
-      },
-      validation: (Rule) =>
-        Rule.custom(async (value, context) => validateExperiment(value, context)),
     }),
   ],
   preview: {
