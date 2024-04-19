@@ -1,6 +1,7 @@
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
+import {amplitudeExperiment} from '@tinloof/sanity-amplitude-experiment'
 import schemas from './schemas'
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || ''
@@ -11,7 +12,7 @@ export default defineConfig({
   title: 'Sanity Amplitude Demo',
   projectId,
   dataset,
-  plugins: [structureTool(), visionTool()],
+  plugins: [structureTool(), visionTool(), amplitudeExperiment()],
   schema: {
     types: schemas,
   },

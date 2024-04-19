@@ -1,11 +1,19 @@
 {
-  "name": "sanity-plugin-amplitude-experiment",
+  "name": "@tinloof/sanity-amplitude-experiment",
   "type": "module",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.0",
+  "description": "A plugin to easily connect your Amplitude experiments with your Sanity documents.",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/tinloof/sanity-amplitude-experiment.git",
+    "directory": "packages/sanity-amplitude-experiment"
+  },
   "keywords": [
     "sanity",
-    "sanity-plugin"
+    "sanity-plugin",
+    "amplitude",
+    "tinloof",
+    "ab testing"
   ],
   "license": "MIT",
   "author": "Tinloof",
@@ -37,7 +45,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@sanity/incompatible-plugin": "^1.0.4"
+    "@sanity/icons": "^2.11.8",
+    "@sanity/incompatible-plugin": "^1.0.4",
+    "@sanity/studio-secrets": "^2.0.2",
+    "@sanity/ui": "^2.1.4",
+    "swr": "^2.2.5"
   },
   "devDependencies": {
     "@sanity/pkg-utils": "^6.7.1",
@@ -57,7 +69,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sanity": "^3.38.0",
-    "styled-components": "^5.3.11",
+    "styled-components": "^6.1.8",
     "typescript": "^5.4.5"
   },
   "eslintConfig": {

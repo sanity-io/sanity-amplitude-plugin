@@ -1,35 +1,65 @@
-# sanity-plugin-amplitude-experiment
+# @tinloof/sanity-amplitude-experiment
 
-> This is a **Sanity Studio v3** plugin.
+A plugin to easily connect your Amplitude experiments with your Sanity documents.
 
 ## Installation
 
 ```sh
-npm install sanity-plugin-sanity-amplitude-experiment
+npm install @tinloof/sanity-amplitude-experiment
 ```
 
-## Usage
+## Requirements
 
-Add it as a plugin in `sanity.config.ts` (or .js):
+- A Sanity project
+- An [Amplitude](https://amplitude.com/) account (Growth plan)
+- An Amplitude [Management API key](https://www.docs.developers.amplitude.com/guides/amplitude-keys-guide/?h=keys#scim-key)
+
+## Basic usage
+
+#### 1. Configure the plugin in `sanity.config.ts`
 
 ```ts
 import {defineConfig} from 'sanity'
-import {myPlugin} from 'sanity-plugin-sanity-amplitude-experiment'
+import {structureTool} from 'sanity/structure'
+import {amplitudeExperiment} from '@tinloof/sanity-amplitude-experiment'
+import schemas from './schemas'
+
+const projectId = process.env.SANITY_STUDIO_PROJECT_ID || ''
+const dataset = process.env.SANITY_STUDIO_DATASET || ''
 
 export default defineConfig({
-  //...
-  plugins: [myPlugin({})],
+  projectId,
+  dataset,
+  plugins: [structureTool(), amplitudeExperiment()],
+  schema: {
+    types: schemas,
+  },
 })
 ```
 
-## License
+#### 2. Add the `amplitude-experiment` field to your document
 
-[MIT](LICENSE) © Tinloof
+```ts
+import {defineField, defineType} from 'sanity'
 
-## Develop & test
+export default defineType({
+  type: 'document',
+  name: 'page',
+  fields: [
+    defineField({
+      type: 'string',
+      name: 'title',
+      group: 'content',
+    }),
+    defineField({
+      name: 'experiment',
+      type: 'amplitude-experiment',
+    }),
+  ],
+})
+```
 
-This plugin uses [@sanity/plugin-kit](https://github.com/sanity-io/plugin-kit)
-with default configuration for build & watch scripts.
+#### 3. Configure your Management API key
 
-See [Testing a plugin in Sanity Studio](https://github.com/sanity-io/plugin-kit#testing-a-plugin-in-sanity-studio)
-on how to run this plugin with hotreload in the studio.
+<video controls src="https://github.com/tinloof/sanity-amplitude-experiment/assets/10447155/f7a92086-97b0-4e96-a938-7725853da327">
+</video>

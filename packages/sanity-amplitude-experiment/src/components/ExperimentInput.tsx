@@ -1,22 +1,14 @@
 import {ObjectInputProps, set, unset} from 'sanity'
 import {Button, Card, Flex, Select, Spinner, Stack, Text} from '@sanity/ui'
-import {SettingsView, useSecrets} from '@sanity/studio-secrets'
+import {SettingsView} from '@sanity/studio-secrets'
 import {useCallback, useEffect, useState} from 'react'
 import {EllipsisVerticalIcon} from '@sanity/icons'
 import useSWR from 'swr'
-
-const namespace = 'amplitudeSecrets'
-
-const pluginConfigKeys = [
-  {
-    key: 'apiKey',
-    title: 'Management API Key',
-  },
-]
+import {secretsNamespace, useAmplitudeCredentials} from './StudioLayout'
 
 export function ExperimentInput(props: ObjectInputProps) {
   const {onChange, value} = props
-  const {secrets}: any = useSecrets(namespace)
+  const {secrets, loading} = useAmplitudeCredentials()
 
   useEffect(() => {
     // Reset input value when the API key is removed
@@ -25,10 +17,14 @@ export function ExperimentInput(props: ObjectInputProps) {
     }
   }, [secrets, onChange, value])
 
+  if (loading) {
+    return <Spinner />
+  }
+
   if (!secrets?.apiKey) {
     return (
       <Flex>
-        <AmplitudeCredentials text="Configure Amplitude api key" />
+        <AmplitudeCredentials text="Configure Amplitude Credentials" />
       </Flex>
     )
   }
@@ -72,11 +68,7 @@ function ExperimentsSelector(props: ObjectInputProps & {apiKey: string}) {
     }
   }, [props.value, activeExperiments, onChange])
 
-  if (isLoading) {
-    return <Spinner />
-  }
-
-  if (!data?.experiments || data?.experiments.length === 0) {
+  if (!isLoading && (!data?.experiments || data?.experiments?.length === 0)) {
     return (
       <Flex justify="space-between" gap={2} align={'center'}>
         <Text size={1}>
@@ -95,20 +87,25 @@ function ExperimentsSelector(props: ObjectInputProps & {apiKey: string}) {
     <>
       <Flex align="center" gap={2} justify="space-between">
         <Select
+          readOnly={isLoading}
           {...elementProps}
           onChange={handleChangeExperiment}
           value={props.value?.key || 'null'}
         >
-          <option value="null">None</option>
-          {activeExperiments.map((experiment: any) => (
-            <option key={experiment.id} value={experiment.key}>
-              {experiment.name}
-            </option>
-          ))}
+          {!isLoading && (
+            <>
+              <option value="null">None</option>
+              {activeExperiments.map((experiment: any) => (
+                <option key={experiment.id} value={experiment.key}>
+                  {experiment.name}
+                </option>
+              ))}
+            </>
+          )}
         </Select>
         <AmplitudeCredentials />
       </Flex>
-      <VariantSelector experiments={data.experiments} {...props} />
+      <VariantSelector isLoading={isLoading} experiments={data?.experiments} {...props} />
     </>
   )
 }
@@ -116,10 +113,11 @@ function ExperimentsSelector(props: ObjectInputProps & {apiKey: string}) {
 function VariantSelector(
   props: ObjectInputProps & {
     experiments: any
+    isLoading: boolean
   },
 ) {
-  const {onChange} = props
-  const selectedExperiment = props.experiments.find(
+  const {onChange, isLoading} = props
+  const selectedExperiment = props.experiments?.find(
     (experiment: any) => experiment.key === props.value?.key,
   )
   const variants = selectedExperiment?.variants || []
@@ -141,7 +139,7 @@ function VariantSelector(
     [onChange, selectedExperiment],
   )
 
-  if (!variants || variants.length === 0) {
+  if (!isLoading && (!variants || variants.length === 0)) {
     return null
   }
 
@@ -149,12 +147,13 @@ function VariantSelector(
     <Card>
       <Stack space={3}>
         <Text size={1}>Variant</Text>
-        <Select value={props.value?.variant} onChange={handleVariantChange}>
-          {variants.map((variant: any) => (
-            <option key={variant.key} value={variant.key}>
-              {variant.key}
-            </option>
-          ))}
+        <Select readOnly={isLoading} value={props.value?.variant} onChange={handleVariantChange}>
+          {!isLoading &&
+            variants.map((variant: any) => (
+              <option key={variant.key} value={variant.key}>
+                {variant.key}
+              </option>
+            ))}
         </Select>
       </Stack>
     </Card>
@@ -174,9 +173,14 @@ function AmplitudeCredentials(props: {text?: string}) {
       </Button>
       {showSettings && (
         <SettingsView
-          title={'Amplitude API credentials'}
-          namespace={namespace}
-          keys={pluginConfigKeys}
+          title={'Amplitude Credentials'}
+          namespace={secretsNamespace}
+          keys={[
+            {
+              key: 'apiKey',
+              title: 'Management API Key',
+            },
+          ]}
           onClose={() => {
             setShowSettings(false)
           }}

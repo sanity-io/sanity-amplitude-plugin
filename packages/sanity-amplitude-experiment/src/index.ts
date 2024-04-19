@@ -1,26 +1,35 @@
 import {definePlugin} from 'sanity'
+import pkgjson from '../package.json'
+import amplitudeExperiments from './schemas/amplitude-experiments'
+import {CustomStudioLayout} from './components/StudioLayout'
 
-interface MyPluginConfig {
-  /* nothing here yet */
-}
+export * from './types'
+
+const pluginName = pkgjson.name
 
 /**
  * Usage in `sanity.config.ts` (or .js)
  *
  * ```ts
  * import {defineConfig} from 'sanity'
- * import {myPlugin} from 'sanity-plugin-sanity-amplitude-experiment'
+ * import {amplitudeExperiment} from '@tinloof/sanity-plugin-amplitude-experiment'
  *
  * export default defineConfig({
  *   // ...
- *   plugins: [myPlugin()],
+ *   plugins: [amplitudeExperiment()],
  * })
  * ```
  */
-export const myPlugin = definePlugin<MyPluginConfig | void>((config = {}) => {
-  // eslint-disable-next-line no-console
-  console.log('hello from sanity-plugin-amplitude-experiment')
+export const amplitudeExperiment = definePlugin(() => {
   return {
-    name: 'sanity-plugin-amplitude-experiment',
+    name: pluginName,
+    studio: {
+      components: {
+        layout: CustomStudioLayout,
+      },
+    },
+    schema: {
+      types: [amplitudeExperiments],
+    },
   }
 })

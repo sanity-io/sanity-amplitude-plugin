@@ -15,6 +15,7 @@
     "sanity"
   ],
   "dependencies": {
+    "@tinloof/sanity-amplitude-experiment": "workspace:*",
     "@sanity/icons": "^2.11.8",
     "@sanity/studio-secrets": "^2.0.2",
     "@sanity/ui": "^2.1.4",
