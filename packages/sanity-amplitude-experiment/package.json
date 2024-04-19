@@ -1,7 +1,7 @@
 {
   "name": "@tinloof/sanity-amplitude-experiment",
   "type": "module",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A plugin to easily connect your Amplitude experiments with your Sanity documents.",
   "repository": {
     "type": "git",
