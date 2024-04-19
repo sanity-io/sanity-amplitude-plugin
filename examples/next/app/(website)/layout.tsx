@@ -1,11 +1,13 @@
 import {revalidatePath, revalidateTag} from "next/cache";
 import {draftMode} from "next/headers";
 import {VisualEditing} from "next-sanity";
+import {AmplitudeSdk} from "@/components/Amplitude";
 
 export default function Layout({children}: {children: React.ReactNode}) {
   return (
     <>
       <main>{children}</main>
+      <AmplitudeSdk />
       {draftMode().isEnabled && (
         <VisualEditing
           refresh={async (payload) => {

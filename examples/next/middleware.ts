@@ -1,8 +1,10 @@
 import type {NextRequest} from "next/server";
+import type {UserSession} from "@amplitude/analytics-types";
 import {NextResponse} from "next/server";
 
 import type {AmplitudeExperiment} from "./types/sanity.generated";
 import {loadEvaluationPage, loadPageExperiment} from "./data/sanity";
+import {getOrCreateUserSession, setHandoffCookie} from "./utils/amplitude";
 
 export async function middleware(request: NextRequest) {
   const sanityPage = await loadPageExperiment(request.nextUrl.pathname);
@@ -12,12 +14,18 @@ export async function middleware(request: NextRequest) {
     // Return next() if page is not part of an experiment
     return NextResponse.next();
   }
+
+  const {userSession, isNewUser} = getOrCreateUserSession(request);
   // Fetch Amplitude evaluation based on page experiment
-  const evaluation = await fetchAmplitudeEvalutation(experiment);
+  const evaluation = await fetchAmplitudeEvalutation({experiment, userSession});
 
   if (!evaluation || experiment.variant === evaluation?.[experiment.key].key) {
+    const response = NextResponse.next();
+    if (isNewUser) {
+      setHandoffCookie(userSession, response, request);
+    }
     // Return next() if page experiment is the same as Amplitude evaluation
-    return NextResponse.next();
+    return response;
   }
   // Fetch treatment page
   const sanityTreatmentPage = await loadEvaluationPage({
@@ -25,21 +33,31 @@ export async function middleware(request: NextRequest) {
     variant: evaluation[experiment.key].key,
   });
 
-  if (sanityTreatmentPage?.slug?.current) {
-    // Rewrite to treatment page
-    return NextResponse.rewrite(
-      new URL(sanityTreatmentPage?.slug.current, request.url),
-    );
+  const response = sanityTreatmentPage?.slug?.current
+    ? // Rewrite to treatment page
+      NextResponse.rewrite(
+        new URL(sanityTreatmentPage?.slug.current, request.url),
+      )
+    : NextResponse.next();
+
+  if (isNewUser) {
+    setHandoffCookie(userSession, response, request);
   }
 
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico|fonts|images).*)"],
 };
 
-async function fetchAmplitudeEvalutation(experiment: AmplitudeExperiment) {
+async function fetchAmplitudeEvalutation({
+  experiment,
+  userSession,
+}: {
+  experiment: AmplitudeExperiment;
+  userSession: UserSession;
+}) {
   const deploymentKey = process.env.AMPLITUDE_DEPLOYMENT_KEY;
   const endpoint = new URL("https://api.lab.amplitude.com/v1/vardata");
 
@@ -48,7 +66,7 @@ async function fetchAmplitudeEvalutation(experiment: AmplitudeExperiment) {
   }
 
   endpoint.searchParams.set("flag_key", experiment.key);
-  endpoint.searchParams.set("device_id", Math.random().toString(36));
+  endpoint.searchParams.set("device_id", userSession.deviceId ?? "");
 
   const result = await fetch(endpoint.href, {
     method: "GET",
