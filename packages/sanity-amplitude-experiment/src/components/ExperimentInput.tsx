@@ -83,43 +83,50 @@ function ExperimentsSelector(props: ObjectInputProps & {apiKey: string}) {
     )
   }
 
+  const selectedExperiment = data?.experiments?.find(
+    (experiment: any) => experiment.id === props.value?.id,
+  )
+
   return (
     <>
-      <Flex align="center" gap={2} justify="space-between">
-        <Select
-          readOnly={isLoading}
-          {...elementProps}
-          onChange={handleChangeExperiment}
-          value={props.value?.key || 'null'}
-        >
-          {!isLoading && (
-            <>
-              <option value="null">None</option>
-              {activeExperiments.map((experiment: any) => (
-                <option key={experiment.id} value={experiment.key}>
-                  {experiment.name}
-                </option>
-              ))}
-            </>
-          )}
-        </Select>
-        <AmplitudeCredentials />
-      </Flex>
-      <VariantSelector isLoading={isLoading} experiments={data?.experiments} {...props} />
+      <Stack space={3}>
+        <Flex align="center" gap={2} justify="space-between">
+          <Select
+            readOnly={isLoading}
+            {...elementProps}
+            onChange={handleChangeExperiment}
+            value={props.value?.key || 'null'}
+          >
+            {!isLoading && (
+              <>
+                <option value="null">None</option>
+                {activeExperiments.map((experiment: any) => (
+                  <option key={experiment.id} value={experiment.key}>
+                    {experiment.name}
+                  </option>
+                ))}
+              </>
+            )}
+          </Select>
+          <AmplitudeCredentials />
+        </Flex>
+        <Text size={1}>
+          The {selectedExperiment?.name} experiment is using the following deployments:{' '}
+          {selectedExperiment?.deployments.join(', ')}
+        </Text>
+      </Stack>
+      <VariantSelector isLoading={isLoading} selectedExperiment={selectedExperiment} {...props} />
     </>
   )
 }
 
 function VariantSelector(
   props: ObjectInputProps & {
-    experiments: any
+    selectedExperiment: any
     isLoading: boolean
   },
 ) {
-  const {onChange, isLoading} = props
-  const selectedExperiment = props.experiments?.find(
-    (experiment: any) => experiment.key === props.value?.key,
-  )
+  const {onChange, isLoading, selectedExperiment} = props
   const variants = selectedExperiment?.variants || []
 
   const handleVariantChange = useCallback(
