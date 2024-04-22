@@ -9,6 +9,11 @@ module.exports = {
   ],
   theme: {
     ...defaultTheme,
+    extend: {
+      container: {
+        center: true,
+      },
+    },
     // Overriding fontFamily to use @next/font loaded families
     fontFamily: {
       mono: 'var(--font-mono)',
