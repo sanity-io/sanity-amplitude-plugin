@@ -212,7 +212,7 @@ function DeploymentsListTooltip(props: {selectedExperiment: any; children: any})
       content={
         <Box padding={1}>
           <Text size={1}>
-            Used deployments:{' '}
+            Deployed to:{' '}
             <Text size={1} weight="semibold">
               {deploymentList}
             </Text>
