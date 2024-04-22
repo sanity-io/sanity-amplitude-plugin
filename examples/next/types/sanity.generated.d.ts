@@ -152,7 +152,7 @@ export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: data/sanity/queries.ts
 // Variable: PAGE_QUERY
-// Query: *[slug.current == $pathname][0]
+// Query: *[slug.current == $pathname && _type != "sanity.fileAsset" && _type != "sanity.imageAsset"][0]
 export type PAGE_QUERYResult = {
   _id: string;
   _type: "page";
@@ -162,47 +162,6 @@ export type PAGE_QUERYResult = {
   title?: string;
   slug?: Slug;
   experiment?: AmplitudeExperiment;
-} | {
-  _id: string;
-  _type: "sanity.fileAsset";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  originalFilename?: string;
-  label?: string;
-  title?: string;
-  description?: string;
-  altText?: string;
-  sha1hash?: string;
-  extension?: string;
-  mimeType?: string;
-  size?: number;
-  assetId?: string;
-  uploadId?: string;
-  path?: string;
-  url?: string;
-  source?: SanityAssetSourceData;
-} | {
-  _id: string;
-  _type: "sanity.imageAsset";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  originalFilename?: string;
-  label?: string;
-  title?: string;
-  description?: string;
-  altText?: string;
-  sha1hash?: string;
-  extension?: string;
-  mimeType?: string;
-  size?: number;
-  assetId?: string;
-  uploadId?: string;
-  path?: string;
-  url?: string;
-  metadata?: SanityImageMetadata;
-  source?: SanityAssetSourceData;
 } | null;
 // Variable: PAGE_EXPERIMENT_QUERY
 // Query: *[slug.current == $pathname && experiment != null][0] {  experiment}
