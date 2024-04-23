@@ -1,5 +1,12 @@
 # sanity-amplitude-demo
 
+## 1.0.3
+
+### Patch Changes
+
+- Updated dependencies [80b2d9c]
+  - @tinloof/sanity-amplitude-experiment@0.0.3
+
 ## 1.0.2
 
 ### Patch Changes
