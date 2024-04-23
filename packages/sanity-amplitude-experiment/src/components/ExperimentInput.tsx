@@ -1,5 +1,5 @@
 import {ObjectInputProps, set, unset} from 'sanity'
-import {Button, Card, Flex, Select, Spinner, Stack, Text} from '@sanity/ui'
+import {Box, Button, Card, Flex, Select, Spinner, Stack, Text, Tooltip} from '@sanity/ui'
 import {SettingsView} from '@sanity/studio-secrets'
 import {useCallback, useEffect, useState} from 'react'
 import {EllipsisVerticalIcon} from '@sanity/icons'
@@ -29,14 +29,12 @@ export function ExperimentInput(props: ObjectInputProps) {
     )
   }
 
-  return secrets?.apiKey ? <ExperimentsSelector apiKey={secrets.apiKey} {...props} /> : null
+  return secrets?.apiKey ? <ExperimentsSelector {...props} /> : null
 }
 
-function ExperimentsSelector(props: ObjectInputProps & {apiKey: string}) {
+function ExperimentsSelector(props: ObjectInputProps) {
   const {elementProps, onChange} = props
-  const {data, isLoading} = useFetchExperiments({
-    apiKey: props.apiKey,
-  })
+  const {data, isLoading} = useFetchExperiments()
   const activeExperiments = data?.experiments?.filter((exp: any) => exp.enabled)
 
   const handleChangeExperiment = useCallback(
@@ -83,43 +81,48 @@ function ExperimentsSelector(props: ObjectInputProps & {apiKey: string}) {
     )
   }
 
+  const selectedExperiment = data?.experiments?.find(
+    (experiment: any) => experiment.id === props.value?.id,
+  )
+
   return (
     <>
-      <Flex align="center" gap={2} justify="space-between">
-        <Select
-          readOnly={isLoading}
-          {...elementProps}
-          onChange={handleChangeExperiment}
-          value={props.value?.key || 'null'}
-        >
-          {!isLoading && (
-            <>
-              <option value="null">None</option>
-              {activeExperiments.map((experiment: any) => (
-                <option key={experiment.id} value={experiment.key}>
-                  {experiment.name}
-                </option>
-              ))}
-            </>
-          )}
-        </Select>
-        <AmplitudeCredentials />
-      </Flex>
-      <VariantSelector isLoading={isLoading} experiments={data?.experiments} {...props} />
+      <Stack space={3}>
+        <Flex align="center" gap={2} justify="space-between">
+          <DeploymentsListTooltip selectedExperiment={selectedExperiment}>
+            <Select
+              readOnly={isLoading}
+              {...elementProps}
+              onChange={handleChangeExperiment}
+              value={props.value?.key || 'null'}
+            >
+              {!isLoading && (
+                <>
+                  <option value="null">None</option>
+                  {activeExperiments.map((experiment: any) => (
+                    <option key={experiment.id} value={experiment.key}>
+                      {experiment.name}
+                    </option>
+                  ))}
+                </>
+              )}
+            </Select>
+          </DeploymentsListTooltip>
+          <AmplitudeCredentials />
+        </Flex>
+      </Stack>
+      <VariantSelector isLoading={isLoading} selectedExperiment={selectedExperiment} {...props} />
     </>
   )
 }
 
 function VariantSelector(
   props: ObjectInputProps & {
-    experiments: any
+    selectedExperiment: any
     isLoading: boolean
   },
 ) {
-  const {onChange, isLoading} = props
-  const selectedExperiment = props.experiments?.find(
-    (experiment: any) => experiment.key === props.value?.key,
-  )
+  const {onChange, isLoading, selectedExperiment} = props
   const variants = selectedExperiment?.variants || []
 
   const handleVariantChange = useCallback(
@@ -190,7 +193,40 @@ function AmplitudeCredentials(props: {text?: string}) {
   )
 }
 
-function useFetchExperiments(props: {apiKey: string}) {
+function DeploymentsListTooltip(props: {selectedExperiment: any; children: any}) {
+  const {selectedExperiment} = props
+  const {data} = useFetchExperimentDeployments({experiment: selectedExperiment})
+
+  if (!data || data?.deployments?.length === 0) {
+    return props.children
+  }
+
+  const deploymentList = data?.deployments
+    ?.map((deployment: any) => {
+      return deployment.label
+    })
+    .join(', ')
+
+  return (
+    <Tooltip
+      content={
+        <Box padding={1}>
+          <Text size={1}>
+            Deployed to: <strong>{deploymentList}</strong>
+          </Text>
+        </Box>
+      }
+      fallbackPlacements={['right', 'left']}
+      placement="top"
+      portal
+    >
+      {props.children}
+    </Tooltip>
+  )
+}
+
+function useFetchExperiments() {
+  const {secrets} = useAmplitudeCredentials()
   const endpoint = 'https://experiment.amplitude.com/api/1/experiments?limit=1000'
   const cacheKey = 'swr-amplitude-experiments'
   const expiration = 10000
@@ -208,7 +244,7 @@ function useFetchExperiments(props: {apiKey: string}) {
 
     return fetch(url, {
       headers: {
-        Authorization: `Bearer ${props.apiKey}`,
+        Authorization: `Bearer ${secrets.apiKey}`,
       },
     }).then((res) => res.json())
   }
@@ -225,4 +261,53 @@ function useFetchExperiments(props: {apiKey: string}) {
   })
 
   return {data, isLoading, error}
+}
+
+function useFetchExperimentDeployments(props: {experiment?: any}) {
+  const experimentId = props.experiment?.id
+  const {secrets} = useAmplitudeCredentials()
+  const endpoint = `https://experiment.amplitude.com/api/1/experiments/${experimentId}/deployments`
+  const cacheKey = `swr-amplitude-deployments-${experimentId}`
+  const expiration = 10000
+
+  const fetcher = async (url: string) => {
+    if (!props.experiment) {
+      return null
+    }
+
+    const cachedData = sessionStorage.getItem(cacheKey)
+
+    if (cachedData) {
+      const {value, timestamp} = JSON.parse(cachedData)
+
+      if (Date.now() < timestamp) {
+        return Promise.resolve({deployments: value, isCached: true})
+      }
+    }
+
+    return fetch(url, {
+      headers: {
+        Authorization: `Bearer ${secrets.apiKey}`,
+      },
+    }).then(async (res) => res.json())
+  }
+
+  const {data, error, isLoading} = useSWR(endpoint, fetcher, {
+    onSuccess(data) {
+      if (!data?.isCached && data) {
+        sessionStorage.setItem(
+          cacheKey,
+          JSON.stringify({value: data, timestamp: Date.now() + expiration}),
+        )
+      }
+    },
+  })
+
+  return {
+    data: {
+      deployments: data?.isCached ? data?.deployments : data,
+    },
+    isLoading,
+    error,
+  }
 }
