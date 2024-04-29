@@ -44,7 +44,7 @@ export const config = {
 async function fetchAmplitudeEvalutation(
   experiment: PagePayload['experiment'],
 ) {
-  const deploymentKey = process.env.AMPLITUDE_DEPLOYMENT_KEY
+  const deploymentKey = process.env.NEXT_PUBLIC_AMPLITUDE_DEPLOYMENT_KEY
   const endpoint = new URL('https://api.lab.amplitude.com/v1/vardata')
 
   if (!experiment || !deploymentKey) {

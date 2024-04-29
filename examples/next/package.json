@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.6.2",
+    "@amplitude/experiment-js-client": "^1.10.0",
     "@next/env": "^14.1.4",
     "@portabletext/react": "^3.0.15",
     "@sanity/client": "^6.15.9",
