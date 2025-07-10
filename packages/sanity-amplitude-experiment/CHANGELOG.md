@@ -1,5 +1,11 @@
 # @tinloof/sanity-amplitude-experiment
 
+## 0.0.4
+
+### Patch Changes
+
+- 6f2b232: allow studio v4 peer dep ranges
+
 ## 0.0.3
 
 ### Patch Changes
