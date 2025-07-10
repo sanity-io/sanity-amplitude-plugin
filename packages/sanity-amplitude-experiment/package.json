@@ -45,9 +45,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@sanity/icons": "^2.11.8",
-    "@sanity/incompatible-plugin": "^1.0.4",
-    "@sanity/studio-secrets": "^2.0.2",
+    "@sanity/icons": "^3.7.4",
+    "@sanity/incompatible-plugin": "^1.0.5",
+    "@sanity/studio-secrets": "^3.0.2",
     "@sanity/ui": "^2.1.4",
     "swr": "^2.2.5"
   },
@@ -97,7 +97,9 @@
   },
   "peerDependencies": {
     "react": "^18.3 || ^19",
-    "sanity": "^3 || ^4.0.0-0"
+    "react-dom": "^18.3 || ^19",
+    "sanity": "^3 || ^4.0.0-0",
+    "styled-components": "^6"
   },
   "engines": {
     "node": ">=18"
