@@ -1,5 +1,11 @@
 # @tinloof/sanity-amplitude-experiment
 
+## 0.1.0
+
+### Minor Changes
+
+- 64c5d0f: Update @sanity/studio-secrets and @sanity/icons to latest majors
+
 ## 0.0.4
 
 ### Patch Changes
